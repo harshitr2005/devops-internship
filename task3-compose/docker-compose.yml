@@ -1,0 +1,23 @@
+services:
+  web:
+    image: ${IMAGE}:${TAG}
+    container_name: ${ENV_NAME}-web
+    ports:
+      - "${HOST_PORT}:80"
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${ENV_NAME}
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCH}
+
+  watchtower:
+    image: nickfedor/watchtower:1.19.0
+    container_name: ${ENV_NAME}-watchtower
+    profiles: ["autoupdate"]
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=${POLL_INTERVAL}
